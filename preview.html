@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gratitude Photo Mission</title>
+  <style>
+    :root {
+      --bg-main: #02040A;
+      --bg-card: #061B3A;
+      --bg-card-soft: rgba(6, 27, 58, 0.92);
+      --blue-main: #0057D9;
+      --blue-dark: #003B93;
+      --blue-glow: #00A3FF;
+      --blue-soft: #75D9FF;
+      --yellow-main: #FFD400;
+      --yellow-soft: #FFE866;
+      --text-main: #FFFFFF;
+      --text-muted: #B8C2D1;
+      --danger: #FF5C7A;
+      --success: #4DE38A;
+      --warning: #FFD400;
+      --line: rgba(0, 163, 255, 0.36);
+      --shadow: rgba(0, 119, 255, 0.38);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text-main);
+      font-family: Inter, Poppins, Arial, sans-serif;
+      background:
+        radial-gradient(circle at 12% 12%, rgba(0, 87, 217, 0.38), transparent 24%),
+        radial-gradient(circle at 85% 18%, rgba(255, 212, 0, 0.20), transparent 18%),
+        radial-gradient(circle at 50% 100%, rgba(0, 163, 255, 0.23), transparent 32%),
+        linear-gradient(145deg, #02040A 0%, #031127 55%, #02040A 100%);
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.35;
+      background-image:
+        radial-gradient(circle, rgba(255,255,255,0.85) 1px, transparent 1.4px),
+        radial-gradient(circle, rgba(0,163,255,0.6) 1px, transparent 1.5px),
+        linear-gradient(rgba(0,163,255,0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,163,255,0.08) 1px, transparent 1px);
+      background-size: 72px 72px, 121px 121px, 48px 48px, 48px 48px;
+      background-position: 0 0, 28px 36px, 0 0, 0 0;
+    }
+
+    .top-border,
+    .bottom-border {
+      position: fixed;
+      left: 0;
+      right: 0;
+      height: 14px;
+      background: repeating-linear-gradient(90deg, var(--yellow-main) 0 46px, #061B3A 46px 60px, var(--blue-glow) 60px 64px, #061B3A 64px 78px);
+      z-index: 20;
+      box-shadow: 0 0 18px rgba(0, 163, 255, 0.45);
+    }
+
+    .top-border { top: 0; }
+    .bottom-border { bottom: 0; }
+
+    .app {
+      width: min(1180px, 94vw);
+      margin: 0 auto;
+      padding: 42px 0 46px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero {
+      text-align: center;
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .school-chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 10px 22px;
+      color: #061127;
+      background: linear-gradient(90deg, #FFFFFF, #E8F3FF);
+      border: 2px solid var(--blue-glow);
+      clip-path: polygon(7% 0, 93% 0, 100% 50%, 93% 100%, 7% 100%, 0 50%);
+      font-size: 0.85rem;
+      font-weight: 900;
+      letter-spacing: 0.3px;
+    }
+
+    h1 {
+      margin: 16px 0 8px;
+      font-size: clamp(2.15rem, 7vw, 5.1rem);
+      line-height: 0.90;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: transparent;
+      -webkit-text-stroke: 2px #FFFFFF;
+      text-shadow:
+        0 0 12px rgba(0, 163, 255, 0.95),
+        0 0 28px rgba(0, 87, 217, 0.75);
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--text-muted);
+      font-weight: 700;
+    }
+
+    .mission-strip {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .pill {
+      border: 1px solid var(--line);
+      background: rgba(2, 4, 10, 0.55);
+      color: var(--text-main);
+      padding: 9px 14px;
+      border-radius: 999px;
+      font-weight: 800;
+      box-shadow: 0 0 12px rgba(0, 163, 255, 0.18);
+    }
+
+    .pill strong { color: var(--yellow-main); }
+
+    .tabs {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: 24px 0;
+    }
+
+    .tab-btn,
+    button {
+      cursor: pointer;
+      border: 0;
+      font: inherit;
+      transition: transform 0.16s ease, filter 0.16s ease, opacity 0.16s ease;
+    }
+
+    .tab-btn {
+      padding: 13px 22px;
+      color: #061127;
+      background: linear-gradient(135deg, #FFFFFF, #DDEFFF);
+      border: 2px solid var(--blue-glow);
+      border-radius: 999px;
+      font-weight: 950;
+      box-shadow: 0 0 16px rgba(0, 163, 255, 0.35);
+    }
+
+    .tab-btn.active {
+      color: #02040A;
+      background: linear-gradient(135deg, var(--yellow-main), var(--yellow-soft));
+      box-shadow: 0 0 18px rgba(255, 212, 0, 0.55);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .card {
+      background: var(--bg-card-soft);
+      border: 2px solid var(--line);
+      border-radius: 24px;
+      padding: 22px;
+      box-shadow: 0 0 26px var(--shadow), inset 0 0 24px rgba(0, 163, 255, 0.08);
+      backdrop-filter: blur(8px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::after {
+      content: "";
+      position: absolute;
+      width: 160px;
+      height: 160px;
+      border: 18px solid rgba(255, 212, 0, 0.10);
+      border-radius: 50%;
+      right: -72px;
+      top: -60px;
+      pointer-events: none;
+    }
+
+    .card-title {
+      margin: 0 0 12px;
+      font-size: clamp(1.35rem, 3vw, 2rem);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #FFFFFF;
+      text-shadow: 0 0 12px rgba(0, 163, 255, 0.7);
+    }
+
+    .mission-card {
+      border-color: rgba(255, 212, 0, 0.65);
+      background:
+        radial-gradient(circle at top right, rgba(255, 212, 0, 0.20), transparent 32%),
+        rgba(6, 27, 58, 0.94);
+    }
+
+    .mission-label {
+      color: #061127;
+      background: var(--yellow-main);
+      display: inline-flex;
+      padding: 8px 13px;
+      border-radius: 999px;
+      font-weight: 950;
+      margin-bottom: 12px;
+    }
+
+    .mission-text {
+      font-size: clamp(1.05rem, 2.5vw, 1.45rem);
+      line-height: 1.35;
+      font-weight: 850;
+      margin: 0 0 14px;
+    }
+
+    .mini-note {
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin: 8px 0 0;
+    }
+
+    label {
+      display: block;
+      font-weight: 850;
+      margin: 16px 0 8px;
+      color: #EAF7FF;
+    }
+
+    select,
+    input[type="password"],
+    input[type="text"],
+    textarea {
+      width: 100%;
+      min-height: 48px;
+      color: #FFFFFF;
+      background: rgba(2, 4, 10, 0.62);
+      border: 2px solid rgba(0, 163, 255, 0.45);
+      border-radius: 14px;
+      padding: 12px 14px;
+      font: inherit;
+      outline: none;
+    }
+
+    textarea {
+      min-height: 84px;
+      resize: vertical;
+    }
+
+    select:focus,
+    input:focus,
+    textarea:focus {
+      border-color: var(--yellow-main);
+      box-shadow: 0 0 0 4px rgba(255, 212, 0, 0.16);
+    }
+
+    option { color: #061127; }
+
+    .mood-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+      gap: 10px;
+    }
+
+    .mood-option input { display: none; }
+
+    .mood-option span {
+      display: block;
+      border: 2px solid rgba(0, 163, 255, 0.32);
+      background: rgba(2, 4, 10, 0.45);
+      padding: 12px;
+      border-radius: 14px;
+      text-align: center;
+      font-weight: 900;
+    }
+
+    .mood-option input:checked + span {
+      background: linear-gradient(135deg, var(--yellow-main), var(--yellow-soft));
+      color: #061127;
+      border-color: #FFFFFF;
+      box-shadow: 0 0 18px rgba(255, 212, 0, 0.42);
+    }
+
+    .photo-zone {
+      border: 2px dashed rgba(255, 212, 0, 0.7);
+      border-radius: 20px;
+      padding: 16px;
+      background: rgba(2, 4, 10, 0.38);
+      margin-top: 8px;
+      text-align: center;
+    }
+
+    input[type="file"] {
+      width: 100%;
+      color: var(--text-muted);
+      background: rgba(2, 4, 10, 0.40);
+      border: 1px solid rgba(0, 163, 255, 0.34);
+      border-radius: 14px;
+      padding: 12px;
+    }
+
+    .preview-wrap {
+      display: none;
+      margin-top: 14px;
+    }
+
+    .preview-wrap img,
+    .thumb {
+      max-width: 100%;
+      border-radius: 16px;
+      border: 2px solid rgba(0, 163, 255, 0.42);
+      box-shadow: 0 0 14px rgba(0, 163, 255, 0.25);
+      background: #02040A;
+    }
+
+    .preview-wrap img {
+      max-height: 280px;
+      object-fit: contain;
+    }
+
+    .primary-btn,
+    .secondary-btn,
+    .danger-btn,
+    .ghost-btn,
+    .success-btn,
+    .warn-btn {
+      min-height: 48px;
+      padding: 12px 18px;
+      border-radius: 14px;
+      font-weight: 950;
+      letter-spacing: 0.02em;
+    }
+
+    .primary-btn {
+      width: 100%;
+      margin-top: 18px;
+      color: #061127;
+      background: linear-gradient(135deg, var(--yellow-main), var(--yellow-soft));
+      box-shadow: 0 0 18px rgba(255, 212, 0, 0.42);
+    }
+
+    .secondary-btn {
+      color: #FFFFFF;
+      background: linear-gradient(135deg, var(--blue-main), var(--blue-dark));
+      border: 1px solid rgba(255,255,255,0.18);
+    }
+
+    .success-btn {
+      color: #061127;
+      background: linear-gradient(135deg, #77F0A5, var(--success));
+    }
+
+    .warn-btn {
+      color: #061127;
+      background: linear-gradient(135deg, var(--yellow-soft), var(--yellow-main));
+    }
+
+    .danger-btn {
+      color: #FFFFFF;
+      background: linear-gradient(135deg, #FF7B94, #D92A4C);
+    }
+
+    .ghost-btn {
+      color: #FFFFFF;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+    }
+
+    button:hover { transform: translateY(-1px); filter: brightness(1.05); }
+    button:disabled { cursor: not-allowed; opacity: 0.55; transform: none; }
+
+    .result {
+      display: none;
+      margin-top: 16px;
+      border-radius: 18px;
+      padding: 16px;
+      border: 2px solid rgba(0, 163, 255, 0.34);
+      background: rgba(2, 4, 10, 0.50);
+      line-height: 1.5;
+    }
+
+    .result.ok { border-color: rgba(77, 227, 138, 0.75); }
+    .result.error { border-color: rgba(255, 92, 122, 0.75); }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #061127;
+      background: linear-gradient(135deg, var(--yellow-main), #FFFFFF);
+      padding: 9px 14px;
+      border-radius: 999px;
+      font-weight: 950;
+      margin-top: 10px;
+    }
+
+    .dashboard {
+      display: none;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(130px, 1fr));
+      gap: 12px;
+      margin: 16px 0;
+    }
+
+    .stat {
+      background: rgba(2, 4, 10, 0.42);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 14px;
+    }
+
+    .stat .num {
+      font-size: 2rem;
+      font-weight: 950;
+      color: var(--yellow-main);
+      display: block;
+    }
+
+    .energy-bar {
+      height: 18px;
+      background: rgba(2, 4, 10, 0.55);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+
+    .energy-fill {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--blue-glow), var(--yellow-main));
+      box-shadow: 0 0 12px rgba(255, 212, 0, 0.50);
+      transition: width 0.3s ease;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin: 14px 0;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      margin-top: 12px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 980px;
+      background: rgba(2, 4, 10, 0.32);
+    }
+
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid rgba(0, 163, 255, 0.18);
+      text-align: left;
+      vertical-align: middle;
+      font-size: 0.92rem;
+    }
+
+    th {
+      color: var(--yellow-main);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      font-size: 0.78rem;
+      background: rgba(0, 87, 217, 0.26);
+    }
+
+    .status {
+      display: inline-flex;
+      padding: 7px 10px;
+      border-radius: 999px;
+      font-weight: 950;
+      font-size: 0.78rem;
+      white-space: nowrap;
+    }
+
+    .status.confirmed,
+    .status.manual { color: #061127; background: var(--success); }
+    .status.pending { color: #061127; background: var(--yellow-main); }
+    .status.none { color: #FFFFFF; background: rgba(184, 194, 209, 0.24); }
+    .status.flagged { color: #FFFFFF; background: var(--danger); }
+
+    .thumb {
+      width: 72px;
+      height: 72px;
+      object-fit: cover;
+    }
+
+    .photo-link {
+      color: var(--blue-soft);
+      font-weight: 900;
+      text-decoration: none;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .actions button {
+      min-height: 34px;
+      padding: 7px 9px;
+      border-radius: 10px;
+      font-size: 0.78rem;
+    }
+
+    .loading {
+      display: none;
+      color: var(--yellow-main);
+      font-weight: 900;
+      margin-top: 10px;
+    }
+
+    .hidden { display: none !important; }
+
+    .privacy-box {
+      border-left: 5px solid var(--yellow-main);
+      background: rgba(255, 212, 0, 0.10);
+      border-radius: 14px;
+      padding: 12px 14px;
+      margin-top: 14px;
+      color: #F4F7FB;
+      line-height: 1.45;
+    }
+
+    .confetti {
+      position: fixed;
+      top: -20px;
+      width: 10px;
+      height: 16px;
+      background: var(--yellow-main);
+      pointer-events: none;
+      z-index: 200;
+      animation: fall 1100ms linear forwards;
+    }
+
+    @keyframes fall {
+      to { transform: translateY(110vh) rotate(540deg); opacity: 0; }
+    }
+
+    @media (max-width: 840px) {
+      .grid { grid-template-columns: 1fr; }
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .card { padding: 18px; }
+      h1 { -webkit-text-stroke: 1.4px #FFFFFF; }
+    }
+
+    @media (max-width: 520px) {
+      .stats { grid-template-columns: 1fr; }
+      .pill { width: 100%; text-align: center; }
+      .tab-btn { width: 100%; }
+      .school-chip { width: 100%; clip-path: none; border-radius: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <script>window.FORCE_DEMO_MODE = true;</script>
+  <div class="top-border"></div>
+  <div class="bottom-border"></div>
+
+  <main class="app">
+    <header class="hero">
+      <div class="school-chip" id="sectionChip">Grade 8 – Gratitude</div>
+      <h1>Photo Mission</h1>
+      <p class="subtitle">Morning check-in with proof photo + adviser confirmation</p>
+      <div class="mission-strip">
+        <span class="pill">Window: <strong id="timeWindow">7:30 AM – 7:45 AM</strong></span>
+        <span class="pill">Date: <strong id="dateText">Loading...</strong></span>
+        <span class="pill">Status: <strong id="windowText">Loading...</strong></span>
+      </div>
+    </header>
+
+    <nav class="tabs">
+      <button class="tab-btn active" id="studentTab" onclick="showTab('student')">Student Mission</button>
+      <button class="tab-btn" id="teacherTab" onclick="showTab('teacher')">Teacher Control Room</button>
+    </nav>
+
+    <section id="studentPanel">
+      <div class="grid">
+        <div class="card mission-card">
+          <span class="mission-label">MISSION OF THE DAY</span>
+          <p class="mission-text" id="missionText">Loading mission...</p>
+          <p class="mini-note">Complete this quick photo mission before 7:45 AM. Your submission will appear as <strong>For Confirmation</strong> until your adviser verifies that you are physically present.</p>
+          <div class="privacy-box" id="privacyBox">Reminder: Avoid capturing classmates’ faces or personal details in the photo.</div>
+        </div>
+
+        <div class="card">
+          <h2 class="card-title">Launch Check-In</h2>
+          <form id="missionForm">
+            <label for="studentName">Select your name</label>
+            <select id="studentName" required>
+              <option value="">Choose your name...</option>
+            </select>
+
+            <label>Morning vibe</label>
+            <div class="mood-grid" id="moodGrid"></div>
+
+            <label for="photoInput">Mission photo</label>
+            <div class="photo-zone">
+              <input id="photoInput" type="file" accept="image/*" capture="environment" required>
+              <p class="mini-note">Use your camera or upload one photo. The website will resize it before saving.</p>
+              <div class="preview-wrap" id="previewWrap">
+                <img id="photoPreview" alt="Mission photo preview">
+              </div>
+            </div>
+
+            <button type="submit" class="primary-btn" id="submitBtn">Complete Photo Mission</button>
+            <div class="loading" id="studentLoading">Uploading mission...</div>
+            <div class="result" id="studentResult"></div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section id="teacherPanel" class="hidden">
+      <div class="card">
+        <h2 class="card-title">Teacher Control Room</h2>
+        <div id="loginBox">
+          <p class="mini-note">Enter the teacher PIN to view and confirm mission submissions.</p>
+          <label for="teacherPin">Teacher PIN</label>
+          <input type="password" id="teacherPin" placeholder="Enter teacher PIN">
+          <button class="primary-btn" onclick="unlockDashboard()">Open Control Room</button>
+          <div class="result" id="teacherLoginResult"></div>
+        </div>
+
+        <div id="dashboard" class="dashboard">
+          <p class="mini-note"><strong id="dashDate">Today</strong> • <span id="dashTime">Loading...</span></p>
+
+          <div class="mission-card card" style="padding:16px; margin:14px 0;">
+            <span class="mission-label">TODAY'S PHOTO MISSION</span>
+            <p class="mission-text" id="dashMissionText" style="font-size:1.1rem;"></p>
+            <label for="customMission">Edit today’s mission</label>
+            <textarea id="customMission" placeholder="Type a custom photo mission..."></textarea>
+            <div class="toolbar">
+              <button class="secondary-btn" onclick="saveMission()">Save Mission</button>
+              <button class="ghost-btn" onclick="loadDashboard()">Refresh</button>
+            </div>
+          </div>
+
+          <div class="stats">
+            <div class="stat"><span class="num" id="confirmedCount">0</span>Confirmed</div>
+            <div class="stat"><span class="num" id="pendingCount">0</span>For Confirmation</div>
+            <div class="stat"><span class="num" id="notCheckedCount">0</span>Not Checked In</div>
+            <div class="stat"><span class="num" id="totalCount">0</span>Total</div>
+          </div>
+
+          <div class="card" style="padding:16px; margin:14px 0;">
+            <strong>Class Energy: <span id="energyText">0%</span></strong>
+            <div class="energy-bar"><div class="energy-fill" id="energyFill"></div></div>
+          </div>
+
+          <div class="toolbar">
+            <button class="secondary-btn" onclick="exportCSV()">Export CSV</button>
+            <button class="danger-btn" onclick="resetTodayRecords()">Reset Today</button>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Student</th>
+                  <th>Status</th>
+                  <th>Time</th>
+                  <th>Vibe</th>
+                  <th>Badge</th>
+                  <th>Photo</th>
+                  <th>Remarks</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="dashboardRows"></tbody>
+            </table>
+          </div>
+          <div class="loading" id="teacherLoading">Updating dashboard...</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const FALLBACK_STUDENTS = [
+      'Bernardo, Daniel Luis B.', 'De Los Santos, Lance Aaron R.', 'Gogolin, Emmanuel P.',
+      'Maguad, Rhycel Gabriel G.', 'Nicolas, Ney Allison M.', 'Pasatiempo, Carlh Vincent M.',
+      'Ramos, Lorenz Andrei C.', 'Rugay, Re Manuel M.', 'Santos, Alejandro Domingo S.',
+      'Sumbillo, Lucas Matteo C.', 'Tuazon, Jazell Jhigz Roen H.', 'Yap, Rohan Kaniel U.',
+      'Belarmino, Shanjia Caye T.', 'Caladiao, Sophia Madison P.', 'De Vera, Caitlin Jade T.',
+      'Estrella, Ma. Diantha Caleigh', 'Galvez, Jazmine Dior D.C.', 'Garcia, Fliah Ayana S.',
+      'Inoncillo, Samuelle Claude', 'Luena, Queen Perseus Andrea B.', 'Reyes, Rhiane Jinri C.',
+      'Valles, Rhiyanna Franceska G.', "Viñas, Miranda Chryssandre' F."
+    ];
+
+    const FALLBACK_MOODS = ['Ready', 'Focused', 'Happy', 'Curious', 'Sleepy but Present'];
+    const FALLBACK_MISSIONS = [
+      'Take a photo of your science notebook and pen on your desk. No faces needed.',
+      'Take a photo of your chair and bag beside your seat. Avoid classmates’ faces.',
+      'Take a photo of your notebook with today’s date written on the page.',
+      'Take a photo of one blue object in the classroom beside your notebook.',
+      'Take a photo of your hand doing a thumbs-up beside your notebook. No face needed.',
+      'Take a photo of your notebook with one classroom wall or board corner visible.',
+      'Take a photo of your pencil or pen pointing to your notebook.',
+      'Take a photo of your desk area with your learning materials ready.'
+    ];
+
+    let appData = null;
+    let compressedPhoto = '';
+    let thumbnailPhoto = '';
+    let dashboardData = null;
+    let currentTeacherPin = '';
+
+    const isGoogleApp = () => typeof google !== 'undefined' && google.script && google.script.run && !window.FORCE_DEMO_MODE;
+
+    const DemoStore = {
+      get key() { return 'gratitudePhotoMissionDemo-' + new Date().toISOString().slice(0, 10); },
+      read() { return JSON.parse(localStorage.getItem(this.key) || '[]'); },
+      write(rows) { localStorage.setItem(this.key, JSON.stringify(rows)); },
+      missionKey: 'gratitudePhotoMissionDemoMission',
+      getMission() {
+        const custom = localStorage.getItem(this.missionKey);
+        if (custom) return custom;
+        const day = Math.floor((Date.now() / 86400000)) % FALLBACK_MISSIONS.length;
+        return FALLBACK_MISSIONS[day];
+      },
+      setMission(text) { localStorage.setItem(this.missionKey, text); }
+    };
+
+    const API = {
+      getInitialData() {
+        if (isGoogleApp()) {
+          google.script.run.withSuccessHandler(initUI).withFailureHandler(showFatal).getInitialData();
+        } else {
+          const now = new Date();
+          initUI({
+            appTitle: 'GRATITUDE PHOTO MISSION',
+            sectionName: 'Grade 8 – Gratitude',
+            students: FALLBACK_STUDENTS,
+            moods: FALLBACK_MOODS,
+            openTime: '7:30 AM',
+            closeTime: '7:45 AM',
+            serverDate: now.toLocaleDateString('en-PH', { month: 'long', day: 'numeric', year: 'numeric' }),
+            serverTime: now.toLocaleTimeString('en-PH'),
+            windowState: 'open',
+            mission: DemoStore.getMission(),
+            privacyReminder: 'Demo preview: time window is unlocked. Actual Apps Script deployment follows 7:30–7:45 AM.'
+          });
+        }
+      },
+      submitMission(payload, onSuccess, onError) {
+        if (isGoogleApp()) {
+          google.script.run.withSuccessHandler(onSuccess).withFailureHandler(onError).submitMission(payload);
+        } else {
+          const rows = DemoStore.read();
+          if (rows.some(r => r.studentName === payload.studentName)) {
+            onSuccess({ ok: false, message: 'Your photo mission is already submitted in this demo.' });
+            return;
+          }
+          const now = new Date();
+          const badges = ['Mission Scout', 'Focus Pilot', 'Gratitude Glow', 'On-Time Star', 'Class Navigator'];
+          const badge = badges[Math.floor(Math.random() * badges.length)];
+          rows.push({
+            studentName: payload.studentName,
+            status: 'For Confirmation',
+            timeSubmitted: now.toLocaleTimeString('en-PH'),
+            mission: DemoStore.getMission(),
+            mood: payload.mood,
+            badge,
+            photoUrl: '',
+            thumbnailDataUrl: payload.thumbnailDataUrl,
+            confirmedAt: '',
+            remarks: 'Demo photo mission submitted; adviser confirmation required'
+          });
+          DemoStore.write(rows);
+          onSuccess({ ok: true, message: 'Demo photo mission submitted!', timeSubmitted: now.toLocaleTimeString('en-PH'), status: 'For Confirmation', mood: payload.mood, badge, mission: DemoStore.getMission() });
+        }
+      },
+      getTeacherData(pin, onSuccess, onError) {
+        if (isGoogleApp()) {
+          google.script.run.withSuccessHandler(onSuccess).withFailureHandler(onError).getTeacherData(pin);
+        } else {
+          if (pin !== '8450') { onError(new Error('Incorrect teacher PIN.')); return; }
+          const rows = DemoStore.read();
+          const map = Object.fromEntries(rows.map(r => [r.studentName, r]));
+          let confirmed = 0, pending = 0, rejected = 0;
+          const table = FALLBACK_STUDENTS.map(name => {
+            const r = map[name];
+            if (!r) return { studentName: name, status: 'Not Checked In', timeSubmitted: '', mission: '', mood: '', badge: '', photoUrl: '', thumbnailDataUrl: '', confirmedAt: '', remarks: 'No photo mission submitted' };
+            if (r.status === 'Confirmed Present' || r.status === 'Manual Present') confirmed++;
+            if (r.status === 'For Confirmation') pending++;
+            if (r.status === 'Needs Adviser Check') rejected++;
+            return r;
+          });
+          const now = new Date();
+          onSuccess({ ok: true, date: now.toLocaleDateString('en-PH', { month: 'long', day: 'numeric', year: 'numeric' }), serverTime: now.toLocaleTimeString('en-PH'), openTime: '7:30 AM', closeTime: '7:45 AM', windowState: 'open', mission: DemoStore.getMission(), confirmedCount: confirmed, pendingCount: pending, rejectedCount: rejected, notCheckedCount: FALLBACK_STUDENTS.length - rows.length, totalCount: FALLBACK_STUDENTS.length, classEnergy: Math.round((confirmed / FALLBACK_STUDENTS.length) * 100), table });
+        }
+      },
+      action(action, pin, studentName, onSuccess, onError) {
+        if (isGoogleApp()) {
+          const runner = google.script.run.withSuccessHandler(onSuccess).withFailureHandler(onError);
+          if (action === 'confirm') runner.confirmStudent(pin, studentName);
+          if (action === 'flag') runner.flagStudent(pin, studentName);
+          if (action === 'manual') runner.markManualPresent(pin, studentName);
+          if (action === 'remove') runner.removeTodayRecord(pin, studentName);
+        } else {
+          const rows = DemoStore.read();
+          const idx = rows.findIndex(r => r.studentName === studentName);
+          if (action === 'remove') {
+            if (idx >= 0) rows.splice(idx, 1);
+            DemoStore.write(rows);
+            onSuccess({ ok: true, message: studentName + ' was returned to Not Checked In.' });
+            return;
+          }
+          if (idx >= 0) {
+            rows[idx].status = action === 'confirm' ? 'Confirmed Present' : action === 'flag' ? 'Needs Adviser Check' : 'Manual Present';
+            rows[idx].confirmedAt = new Date().toLocaleTimeString('en-PH');
+            rows[idx].remarks = action === 'confirm' ? 'Demo adviser confirmed' : action === 'flag' ? 'Demo needs review' : 'Demo manual present';
+          } else if (action === 'manual') {
+            rows.push({ studentName, status: 'Manual Present', timeSubmitted: new Date().toLocaleTimeString('en-PH'), mission: DemoStore.getMission(), mood: '', badge: 'Adviser Verified', photoUrl: '', thumbnailDataUrl: '', confirmedAt: new Date().toLocaleTimeString('en-PH'), remarks: 'Demo manual present' });
+          }
+          DemoStore.write(rows);
+          onSuccess({ ok: true, message: 'Updated ' + studentName + '.' });
+        }
+      },
+      setTodayMission(pin, mission, onSuccess, onError) {
+        if (isGoogleApp()) {
+          google.script.run.withSuccessHandler(onSuccess).withFailureHandler(onError).setTodayMission(pin, mission);
+        } else {
+          DemoStore.setMission(mission);
+          onSuccess({ ok: true, message: 'Demo mission updated.', mission });
+        }
+      },
+      resetToday(pin, onSuccess, onError) {
+        if (isGoogleApp()) {
+          google.script.run.withSuccessHandler(onSuccess).withFailureHandler(onError).resetToday(pin);
+        } else {
+          DemoStore.write([]);
+          onSuccess({ ok: true, message: 'Demo records reset.' });
+        }
+      }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      API.getInitialData();
+      document.getElementById('missionForm').addEventListener('submit', submitForm);
+      document.getElementById('photoInput').addEventListener('change', handlePhotoChange);
+    });
+
+    function initUI(data) {
+      appData = data;
+      document.getElementById('sectionChip').textContent = data.sectionName;
+      document.getElementById('dateText').textContent = data.serverDate;
+      document.getElementById('timeWindow').textContent = data.openTime + ' – ' + data.closeTime;
+      document.getElementById('missionText').textContent = data.mission;
+      document.getElementById('privacyBox').textContent = data.privacyReminder;
+      setWindowText(data.windowState);
+      renderStudentSelect(data.students);
+      renderMoods(data.moods);
+      if (data.windowState !== 'open' && isGoogleApp()) {
+        document.getElementById('submitBtn').disabled = true;
+      }
+    }
+
+    function showFatal(error) {
+      document.getElementById('missionText').textContent = 'The app could not load. Please refresh or check the Apps Script deployment.';
+      console.error(error);
+    }
+
+    function setWindowText(state) {
+      const text = state === 'open' ? 'Open' : state === 'before' ? 'Not Yet Open' : 'Closed';
+      document.getElementById('windowText').textContent = text;
+    }
+
+    function renderStudentSelect(students) {
+      const select = document.getElementById('studentName');
+      students.forEach(name => {
+        const option = document.createElement('option');
+        option.value = name;
+        option.textContent = name;
+        select.appendChild(option);
+      });
+    }
+
+    function renderMoods(moods) {
+      const grid = document.getElementById('moodGrid');
+      grid.innerHTML = '';
+      moods.forEach((mood, index) => {
+        const label = document.createElement('label');
+        label.className = 'mood-option';
+        label.innerHTML = `<input type="radio" name="mood" value="${escapeHtml(mood)}" ${index === 0 ? 'checked' : ''}><span>${escapeHtml(mood)}</span>`;
+        grid.appendChild(label);
+      });
+    }
+
+    function showTab(tab) {
+      document.getElementById('studentPanel').classList.toggle('hidden', tab !== 'student');
+      document.getElementById('teacherPanel').classList.toggle('hidden', tab !== 'teacher');
+      document.getElementById('studentTab').classList.toggle('active', tab === 'student');
+      document.getElementById('teacherTab').classList.toggle('active', tab === 'teacher');
+    }
+
+    async function handlePhotoChange(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      if (!file.type.startsWith('image/')) {
+        showStudentResult(false, 'Please choose an image file only.');
+        return;
+      }
+
+      try {
+        document.getElementById('studentLoading').style.display = 'block';
+        compressedPhoto = await resizeImage(file, 950, 0.74);
+        thumbnailPhoto = await resizeImage(file, 240, 0.55);
+        document.getElementById('photoPreview').src = compressedPhoto;
+        document.getElementById('previewWrap').style.display = 'block';
+      } catch (err) {
+        console.error(err);
+        showStudentResult(false, 'The photo could not be processed. Please try another image or take a new photo.');
+      } finally {
+        document.getElementById('studentLoading').style.display = 'none';
+      }
+    }
+
+    function resizeImage(file, maxSize, quality) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onerror = reject;
+        reader.onload = () => {
+          const img = new Image();
+          img.onerror = reject;
+          img.onload = () => {
+            let width = img.width;
+            let height = img.height;
+            const scale = Math.min(1, maxSize / Math.max(width, height));
+            width = Math.round(width * scale);
+            height = Math.round(height * scale);
+
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            resolve(canvas.toDataURL('image/jpeg', quality));
+          };
+          img.src = reader.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function submitForm(event) {
+      event.preventDefault();
+      const studentName = document.getElementById('studentName').value;
+      const mood = document.querySelector('input[name="mood"]:checked')?.value || 'Ready';
+
+      if (!studentName) {
+        showStudentResult(false, 'Please select your name.');
+        return;
+      }
+      if (!compressedPhoto || !thumbnailPhoto) {
+        showStudentResult(false, 'Please take or upload your mission photo.');
+        return;
+      }
+
+      document.getElementById('submitBtn').disabled = true;
+      document.getElementById('studentLoading').style.display = 'block';
+      showStudentResult(null, '');
+
+      API.submitMission({ studentName, mood, photoDataUrl: compressedPhoto, thumbnailDataUrl: thumbnailPhoto }, (res) => {
+        document.getElementById('studentLoading').style.display = 'none';
+        document.getElementById('submitBtn').disabled = false;
+        if (!res.ok) {
+          showStudentResult(false, res.message);
+          return;
+        }
+        burstConfetti();
+        showStudentResult(true, `<strong>${escapeHtml(res.message)}</strong><br>Time: ${escapeHtml(res.timeSubmitted)}<br>Status: ${escapeHtml(res.status)}<br><span class="badge">🏅 ${escapeHtml(res.badge)}</span>`);
+        document.getElementById('missionForm').reset();
+        renderMoods(appData.moods);
+        document.getElementById('previewWrap').style.display = 'none';
+        compressedPhoto = '';
+        thumbnailPhoto = '';
+      }, (err) => {
+        document.getElementById('studentLoading').style.display = 'none';
+        document.getElementById('submitBtn').disabled = false;
+        showStudentResult(false, err.message || 'Upload failed. Please try again.');
+      });
+    }
+
+    function showStudentResult(ok, html) {
+      const box = document.getElementById('studentResult');
+      if (ok === null) {
+        box.style.display = 'none';
+        return;
+      }
+      box.className = 'result ' + (ok ? 'ok' : 'error');
+      box.innerHTML = html;
+      box.style.display = 'block';
+    }
+
+    function unlockDashboard() {
+      currentTeacherPin = document.getElementById('teacherPin').value.trim();
+      loadDashboard();
+    }
+
+    function loadDashboard() {
+      if (!currentTeacherPin) {
+        showTeacherLogin(false, 'Please enter the teacher PIN.');
+        return;
+      }
+      document.getElementById('teacherLoading').style.display = 'block';
+      API.getTeacherData(currentTeacherPin, (data) => {
+        document.getElementById('teacherLoading').style.display = 'none';
+        document.getElementById('loginBox').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'block';
+        showTeacherLogin(null, '');
+        dashboardData = data;
+        renderDashboard(data);
+      }, (err) => {
+        document.getElementById('teacherLoading').style.display = 'none';
+        showTeacherLogin(false, err.message || 'Could not open dashboard.');
+      });
+    }
+
+    function showTeacherLogin(ok, html) {
+      const box = document.getElementById('teacherLoginResult');
+      if (ok === null) {
+        box.style.display = 'none';
+        return;
+      }
+      box.className = 'result ' + (ok ? 'ok' : 'error');
+      box.innerHTML = html;
+      box.style.display = 'block';
+    }
+
+    function renderDashboard(data) {
+      document.getElementById('dashDate').textContent = data.date;
+      document.getElementById('dashTime').textContent = data.serverTime;
+      document.getElementById('dashMissionText').textContent = data.mission;
+      document.getElementById('customMission').value = data.mission;
+      document.getElementById('confirmedCount').textContent = data.confirmedCount;
+      document.getElementById('pendingCount').textContent = data.pendingCount;
+      document.getElementById('notCheckedCount').textContent = data.notCheckedCount;
+      document.getElementById('totalCount').textContent = data.totalCount;
+      document.getElementById('energyText').textContent = data.classEnergy + '%';
+      document.getElementById('energyFill').style.width = data.classEnergy + '%';
+
+      const tbody = document.getElementById('dashboardRows');
+      tbody.innerHTML = '';
+      data.table.forEach(row => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${escapeHtml(row.studentName)}</strong></td>
+          <td>${statusBadge(row.status)}</td>
+          <td>${escapeHtml(row.timeSubmitted || '—')}</td>
+          <td>${escapeHtml(row.mood || '—')}</td>
+          <td>${escapeHtml(row.badge || '—')}</td>
+          <td>${photoCell(row)}</td>
+          <td>${escapeHtml(row.remarks || '—')}</td>
+          <td><div class="actions">${actionButtons(row)}</div></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function statusBadge(status) {
+      const cls = status === 'Confirmed Present' ? 'confirmed' : status === 'Manual Present' ? 'manual' : status === 'For Confirmation' ? 'pending' : status === 'Needs Adviser Check' ? 'flagged' : 'none';
+      return `<span class="status ${cls}">${escapeHtml(status)}</span>`;
+    }
+
+    function photoCell(row) {
+      if (!row.thumbnailDataUrl) return '—';
+      const img = `<img class="thumb" src="${row.thumbnailDataUrl}" alt="Mission photo thumbnail">`;
+      const link = row.photoUrl ? `<br><a class="photo-link" href="${row.photoUrl}" target="_blank" rel="noopener">Open photo</a>` : '';
+      return img + link;
+    }
+
+    function actionButtons(row) {
+      const name = encodeURIComponent(row.studentName);
+      const confirm = `<button class="success-btn" onclick="studentAction('confirm','${name}')">Confirm</button>`;
+      const flag = `<button class="warn-btn" onclick="studentAction('flag','${name}')">Review</button>`;
+      const manual = `<button class="secondary-btn" onclick="studentAction('manual','${name}')">Manual Present</button>`;
+      const remove = `<button class="ghost-btn" onclick="studentAction('remove','${name}')">Undo</button>`;
+
+      if (row.status === 'Not Checked In') return manual;
+      if (row.status === 'Confirmed Present' || row.status === 'Manual Present') return remove;
+      return confirm + flag + remove;
+    }
+
+    function studentAction(action, encodedName) {
+      const studentName = decodeURIComponent(encodedName);
+      document.getElementById('teacherLoading').style.display = 'block';
+      API.action(action, currentTeacherPin, studentName, () => loadDashboard(), (err) => {
+        document.getElementById('teacherLoading').style.display = 'none';
+        alert(err.message || 'Action failed.');
+      });
+    }
+
+    function saveMission() {
+      const mission = document.getElementById('customMission').value.trim();
+      if (!mission) return alert('Please type a mission first.');
+      API.setTodayMission(currentTeacherPin, mission, () => loadDashboard(), (err) => alert(err.message || 'Mission update failed.'));
+    }
+
+    function resetTodayRecords() {
+      if (!confirm('Reset all records for today? This cannot be undone.')) return;
+      API.resetToday(currentTeacherPin, () => loadDashboard(), (err) => alert(err.message || 'Reset failed.'));
+    }
+
+    function exportCSV() {
+      if (!dashboardData) return;
+      const rows = [['Student Name', 'Status', 'Time Submitted', 'Mood', 'Badge', 'Photo URL', 'Remarks']];
+      dashboardData.table.forEach(r => rows.push([r.studentName, r.status, r.timeSubmitted || '', r.mood || '', r.badge || '', r.photoUrl || '', r.remarks || '']));
+      const csv = rows.map(row => row.map(cell => '"' + String(cell).replace(/"/g, '""') + '"').join(',')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'gratitude-photo-mission-' + new Date().toISOString().slice(0, 10) + '.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function burstConfetti() {
+      for (let i = 0; i < 38; i++) {
+        const piece = document.createElement('div');
+        piece.className = 'confetti';
+        piece.style.left = Math.random() * 100 + 'vw';
+        piece.style.background = Math.random() > 0.5 ? '#FFD400' : '#00A3FF';
+        piece.style.animationDelay = (Math.random() * 220) + 'ms';
+        piece.style.transform = `rotate(${Math.random() * 360}deg)`;
+        document.body.appendChild(piece);
+        setTimeout(() => piece.remove(), 1500);
+      }
+    }
+
+    function escapeHtml(str) {
+      return String(str ?? '').replace(/[&<>'"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[ch]));
+    }
+  </script>
+</body>
+</html>
